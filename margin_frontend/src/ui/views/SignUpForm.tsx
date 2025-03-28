@@ -5,14 +5,14 @@ import { useState } from 'react';
 import useCreateUser from '../hooks/useCreateUser';
 
 type SignUpFormData = {
-  userName: string;
+  name: string;
   password: string;
   confirmPassword: string;
   email: string;
 };
 
 type SignUpApiData = {
-  userName: string;
+  name: string;
   password: string;
   email: string;
 };
@@ -47,10 +47,10 @@ const PasswordVisibilityIcon = ({
 
 const SignUpForm = () => {
   const [formData, setFormData] = useState<SignUpFormData>({
+    name: '', 
     email: '',
     password: '',
     confirmPassword: '',
-    userName: '',
   });
 
   const [errors, setErrors] = useState<Partial<SignUpFormData>>({});
@@ -63,10 +63,10 @@ const SignUpForm = () => {
   const validateForm = (): boolean => {
     const newErrors: Partial<SignUpFormData> = {};
 
-    if (!formData.userName.trim()) {
-      newErrors.userName = 'Username is required';
-    } else if (formData.userName.length < 3) {
-      newErrors.userName = 'Username must be at least 3 characters';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Username is required';
+    } else if (formData.name.length < 3) {
+      newErrors.name = 'Username must be at least 3 characters';
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,9 +84,10 @@ const SignUpForm = () => {
 
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
+    } else if (formData.password.toLowerCase() !== formData.confirmPassword.toLowerCase()) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
+    
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -106,18 +107,19 @@ const SignUpForm = () => {
 
   const onSignUp = () => {
     if (!validateForm()) return;
-
+  
     const apiData: SignUpApiData = {
-      userName: formData.userName,
+      name: formData.name, 
       password: formData.password,
       email: formData.email,
     };
-
+  
     mutation.mutate(apiData, {
       onSuccess: () => alert('User created successfully!'),
       onError: (error: any) => alert(error.message),
     });
   };
+  
 
   return (
     <Card className='text-white flex gap-5 flex-col px-8'>
@@ -126,7 +128,7 @@ const SignUpForm = () => {
         <p>And let's get started with your free trial</p>
       </div>
       
-      {['userName', 'email', 'password', 'confirmPassword'].map((field) => (
+      {['name', 'email', 'password' , 'confirmPassword'].map((field) => (
         <div key={field} className='flex flex-col'>
           <label>{field === 'confirmPassword' ? 'Confirm Password' : field.charAt(0).toUpperCase() + field.slice(1)}</label>
           <div className='w-100 relative flex items-center justify-center'>
